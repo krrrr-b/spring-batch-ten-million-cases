@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: local
+
+  batch:
+    job:
+      enabled: false
+
+  main:
+    allow-bean-definition-overriding: true
+
+---
+spring:
+  profiles: dev
+
+---
+spring:
+  profiles: alpha
+
+---
+spring:
+  profiles: staging
+
+---
+spring:
+  profiles: live
