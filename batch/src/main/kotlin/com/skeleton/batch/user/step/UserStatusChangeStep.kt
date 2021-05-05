@@ -5,7 +5,7 @@ import com.skeleton.batch.configuration.TaskExecutorConfiguration.Companion.BATC
 import com.skeleton.batch.configuration.TaskExecutorConfiguration.Companion.CHUNK_PAGE_SIZE
 import com.skeleton.batch.configuration.TaskExecutorConfiguration.Companion.THROTTLE_LIMIT_SIZE
 import com.skeleton.batch.data.mysql.users.Users
-import com.skeleton.batch.user.step.processor.여신_대출_존재하는_유저_휴면_처리_프로세서
+import com.skeleton.batch.user.step.processor.여신_대출_존재하지_않는_유저_휴면_처리_프로세서
 import com.skeleton.batch.user.step.reader.최근_30일_동안_거래가_없는_회원_조회_리더
 import com.skeleton.batch.user.step.writer.유저_데이터_저장_라이터
 import org.springframework.batch.core.Step
@@ -32,7 +32,7 @@ class UserStatusChangeStep(
     @Bean(최근_30일_동안_거래가_없는_회원_휴면_처리_스텝)
     fun statusChangeUserWithoutTransactionThirtyDaysStep(
         @Qualifier(최근_30일_동안_거래가_없는_회원_조회_리더) reader: ItemReader<Users>,
-        @Qualifier(여신_대출_존재하는_유저_휴면_처리_프로세서) processor: ItemProcessor<Users, Users>,
+        @Qualifier(여신_대출_존재하지_않는_유저_휴면_처리_프로세서) processor: ItemProcessor<Users, Users>,
         @Qualifier(유저_데이터_저장_라이터) writer: ItemWriter<Users>,
         stepBuilderFactory: StepBuilderFactory,
     ): Step {
