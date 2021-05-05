@@ -2,6 +2,12 @@ spring:
   profiles:
     active: local
 
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
   jpa:
     open-in-view: false
     generate-ddl: false
@@ -15,10 +21,3 @@ spring:
       naming:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      username: sa
-      password:
-      jdbc-url: jdbc:h2:mem:testdb?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&requireSSL=false&connectTimeout=3000&socketTimeout=60000&serverTimezone=Asia/Seoul&sessionVariables=character_set_results=utf8mb4

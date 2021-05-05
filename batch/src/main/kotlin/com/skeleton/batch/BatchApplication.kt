@@ -1,41 +1,82 @@
 package com.skeleton.batch
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.skeleton.batch.data.mysql.configuration.DataLoader
+import com.skeleton.batch.data.mysql.users.UsersRepository
+import com.skeleton.batch.user.최근_30일_동안_거래가_없는_회원_휴면_처리_잡
 import org.springframework.batch.core.Job
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.SpringApplication
-import kotlin.system.exitProcess
 import org.springframework.batch.core.JobParametersBuilder
-import org.springframework.batch.core.launch.JobLauncher
-import org.springframework.boot.WebApplicationType
+import org.springframework.batch.core.launch.support.SimpleJobLauncher
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
 
 @SpringBootApplication(scanBasePackages = ["com.skeleton.batch"])
-class BatchApplication {
-    companion object {
-        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+class BatchApplication
 
-        @JvmStatic
-        fun main(args: Array<String>) {
-            if (args.size < 2) {
-                return
-            }
+fun main(args: Array<String>) {
+    runApplication<BatchApplication>(*args)
+}
 
-            System.setProperty("spring.profiles.active", args[0])
-            val context = SpringApplication(BatchApplication::class.java)
-                .also {
-                    it.webApplicationType = WebApplicationType.NONE
-                }
-                .run(*args)
+@RestController
+data class SimpleJobLauncher(
+    private val jobLauncher: SimpleJobLauncher,
+    private val usersRepository: UsersRepository,
 
-            logger.info("$this, profile: ${args[0]} parameter is ${args[1]}")
+    @Qualifier(최근_30일_동안_거래가_없는_회원_휴면_처리_잡)
+    private val springBatchJob: Job
+) {
+    @GetMapping("users/create")
+    fun createUser() = DataLoader(usersRepository).createUser(10000)
 
-            context.getBean(JobLauncher::class.java)
-                .run(context.getBean(String(args[1].toCharArray()), Job::class.java), JobParametersBuilder()
-                    .addString("time", System.currentTimeMillis().toString())
-                    .toJobParameters())
+    @GetMapping("spring-batch/status-change-user-without-transaction-thirty-days-Job")
+    fun springBatchJob() {
+        jobLauncher.run(springBatchJob, JobParametersBuilder()
+            .addString("time", System.currentTimeMillis().toString())
+            .toJobParameters())
+    }
 
-            exitProcess(0)
-        }
+    @GetMapping("batch/status-change-user-without-transaction-thirty-days-Job")
+    fun batchJob() {
+        val startTime = System.currentTimeMillis()
+
+
+
+        println(System.currentTimeMillis() - startTime)
     }
 }
+
+/**
+ * 배치 어플리케이션 파일로 실행시키기 위한 설정
+ * 시연을 위해 주석 처리
+ */
+//@SpringBootApplication(scanBasePackages = ["com.skeleton.batch"])
+//class BatchApplication {
+//    companion object {
+//        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+//
+//        @JvmStatic
+//        fun main(args: Array<String>) {
+//            if (args.size < 2) {
+//                return
+//            }
+//
+//            System.setProperty("spring.profiles.active", args[0])
+//            val context = SpringApplication(BatchApplication::class.java)
+//                .also {
+//                    it.webApplicationType = WebApplicationType.NONE
+//                }
+//                .run(*args)
+//
+//            logger.info("$this, profile: ${args[0]} parameter is ${args[1]}")
+//
+//            context.getBean(JobLauncher::class.java)
+//                .run(context.getBean(String(args[1].toCharArray()), Job::class.java), JobParametersBuilder()
+//                    .addString("time", System.currentTimeMillis().toString())
+//                    .toJobParameters())
+//
+//            exitProcess(0)
+//        }
+//    }
+//}

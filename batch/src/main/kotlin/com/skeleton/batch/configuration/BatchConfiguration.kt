@@ -12,14 +12,10 @@ import org.springframework.context.annotation.Configuration
 @EnableBatchProcessing
 class BatchConfiguration {
     @Bean
-    fun jobRepository(): JobRepository {
-        return MapJobRepositoryFactoryBean(ResourcelessTransactionManager()).getObject()
-    }
+    fun jobRepository() =
+        MapJobRepositoryFactoryBean(ResourcelessTransactionManager()).getObject()
 
     @Bean
-    fun jobLauncher(jobRepository: JobRepository?): SimpleJobLauncher {
-        val simpleJobLauncher = SimpleJobLauncher()
-        simpleJobLauncher.setJobRepository(jobRepository!!)
-        return simpleJobLauncher
-    }
+    fun jobLauncher(jobRepository: JobRepository) =
+        SimpleJobLauncher().also { it.setJobRepository(jobRepository) }
 }
