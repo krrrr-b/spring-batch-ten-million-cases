@@ -11,7 +11,7 @@ object AuthenticationScript {
         MySqlPagingQueryProvider()
             .also {
                 it.setSelectClause("*".trimIndent())
-                it.setFromClause("${USERS_TABLE} u")
+                it.setFromClause("$USERS_TABLE u")
                 it.setWhereClause("" +
                         "u.status = '${UserStatus.NORMAL}' AND " +
                         "(SELECT COUNT(1) " +

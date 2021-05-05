@@ -28,22 +28,39 @@ data class SimpleJobLauncher(
     private val springBatchJob: Job
 ) {
     @GetMapping("users/create")
-    fun createUser() = DataLoader(usersRepository).createUser(10000)
+    fun createUser() = DataLoader(usersRepository).createUser(1000000)
 
     @GetMapping("spring-batch/status-change-user-without-transaction-thirty-days-Job")
     fun springBatchJob() {
-        jobLauncher.run(springBatchJob, JobParametersBuilder()
-            .addString("time", System.currentTimeMillis().toString())
-            .toJobParameters())
+        jobLauncher.run(
+            springBatchJob, JobParametersBuilder()
+                .addString("time", System.currentTimeMillis().toString())
+                .toJobParameters()
+        )
     }
 
     @GetMapping("batch/status-change-user-without-transaction-thirty-days-Job")
-    fun batchJob() {
+    fun justNormalBatch() {
         val startTime = System.currentTimeMillis()
 
+        usersRepository
+            .getUserByLessThenTransactionCountFiveAndAmountOneHundredThousandBeforeThirtyDays()
+            .filter { !isExistsLoans(it.id!!) }
+            // @description one by one, not bulk
+            .map {
+                it.setDormant()
+                usersRepository.save(it)
+            }
+            .toList()
 
+        val milliseconds = System.currentTimeMillis() - startTime
+        val seconds = (milliseconds / 1000) % 60
 
-        println(System.currentTimeMillis() - startTime)
+        println("${seconds}s${milliseconds % 1000}ms")
+    }
+
+    private fun isExistsLoans(userId: Long): Boolean {
+        return false
     }
 }
 
