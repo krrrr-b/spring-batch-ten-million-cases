@@ -1,3 +1,5 @@
+## [for spring_batch_beginner](https://github.com/krrrr-b/spring-batch-ten-million-cases/raw/main/작성중_사내_엔지니어링데이_스프링_배치_공유_자료.pdf)
+
 ## modules
 - kotlin 1.4
 
